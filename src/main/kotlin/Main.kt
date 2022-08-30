@@ -2,6 +2,7 @@
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -14,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.LinearGradient
+import androidx.compose.ui.input.key.Key.Companion.Calendar
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -27,6 +30,8 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.Calendar
+import java.util.spi.CalendarDataProvider
 import javax.xml.crypto.Data
 
 
@@ -34,11 +39,10 @@ fun main() = application {
     Window(onCloseRequest = ::exitApplication, title = "Calculo de Data") {
 
         Scaffold (
+//            backgroundColor = Color.Red,
+//            modifier = Modifier. border(3.dp, )
             topBar = {TopAppBar(title = { Text(text = "Calculo de Datas Apenas") },
-
-
                 )}
-
         )
         {
             Row (
@@ -49,19 +53,15 @@ fun main() = application {
             Column  (
             )
             {
-
             }
         }
-
         textFieldInsere()
-
-        botaoCalcula("Calcule a Data")
-
     }
 }
 
 @Composable
 fun textFieldInsere() {
+
     var textoData by remember { mutableStateOf("") }
 
     MaterialTheme {
@@ -95,13 +95,15 @@ fun textFieldInsere() {
 
                         }
                     },
+
+
                     visualTransformation = DateTransformation(),
                     label = {
                         Text(text = "Data")
                     },
                     singleLine = true,
                     maxLines = 1,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+
                     leadingIcon = {
                         IconButton(onClick = {
                         }) {
@@ -111,6 +113,7 @@ fun textFieldInsere() {
                             )
                         }
                     },
+
                     )
             }
             //COMEÇO DA ROW DO TEXFIELD DE DATA!
@@ -128,7 +131,7 @@ fun textFieldInsere() {
             )
             {
                 TextField(
-                    value = "A diferença de dias entre a data inserida e a data de hoje é de ${entre(textoData)} dias ",
+                    value = "${entre(textoData)}",
                     onValueChange = {
                     },
 
@@ -142,8 +145,6 @@ fun textFieldInsere() {
     }
 }
 
-
-
 fun converte(calculaData: String): LocalDate {
     val formatter = DateTimeFormatter.ofPattern("ddMMyyyy")
     return LocalDate.parse(calculaData, formatter)
@@ -151,130 +152,34 @@ fun converte(calculaData: String): LocalDate {
 
 fun entre(dataStr: String): String {
     if (dataStr.length < 8 ) {
-        return "Por favor"
+        return "Por favor, insira uma data válida!"
+    }
+    else if (dataStr == "26092002") {
+        return "Alo, Gabriel?"
+    }
+    else if (dataStr == "11092003") {
+        return "Oii meu amor <3 te amo"
+    }
+    else if (dataStr == "14062022") {
+        return "QUE DATA MARAVILHOSA"
+    }
+    else if (dataStr == "02092021") {
+        return "O MELHOR DIA NAMORAL"
     }
     try {
         val data1 = converte(dataStr)
         val data2 = LocalDate.now()
         val maxChar = 8
-        return ChronoUnit.DAYS.between(data1, data2).toString()
+        return "A diferença de dias da data inserida até a data de hoje é de " + ChronoUnit.DAYS.between(data1, data2).toString() + " dias"
     }
     catch (e: Exception) {
-        return "Data Invalida $dataStr"
+        return "Data Invalida, não entendi"
     }
 
 
 }
 
-@Composable
-fun botaoCalcula(text: String) {
-
-    var calculo by remember { mutableStateOf(false) }
-    MaterialTheme {
-        Column(
-            modifier = Modifier.fillMaxSize().offset(y = 100.dp).offset(x = 0.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-
-        ) {
-            Button(onClick = {
-                calculo = !calculo
-            },
-            )
-            {
-                Text("Calcule a Data Inserida aqui!")
-                darkColors(Color.Blue)
-                Spacer(modifier = Modifier.height(16.dp))
-                Modifier.offset(y = 400.dp).offset(x = 130.dp)
-                Alignment.CenterHorizontally
-                Arrangement.Center
-            }
-
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Modifier.offset(y = 600.dp).offset(x = 130.dp)
-        Alignment.CenterHorizontally
-        Arrangement.Center
 
 
-
-        AnimatedVisibility(calculo) {
-            boxAparece()
-            Modifier.offset(y = 600.dp).offset(x = 130.dp)
-            Alignment.CenterHorizontally
-            Arrangement.Center
-        }
-
-    }
-
-}
-
-//                    BOX APARECERÁ APÓS O CLIQUE DO USUARIO
-@Composable
-fun boxAparece() {
-
-    var formatter = SimpleDateFormat("d/M/yyyy")
-    val formatterr = DateTimeFormatter.ofPattern("d/M/yyyy")
-//    var formatado = DateTimeFormatter.ofPattern(textoInserido.toString(), formatterr.locale)
-
-    MaterialTheme {
-
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-
-            ) {
-
-        }
-        Box(
-            contentAlignment = Alignment.Center,
-
-            modifier = Modifier.offset(y = 460.dp).offset(x = 700.dp)
-
-                .background(Color.LightGray)
-                .height(50.dp)
-                .clip(CircleShape)
-                .width(500.dp)
-                .shadow(20.dp)
-                .fillMaxSize()
-        ) {
-            Text(
-                "a diferença entre as datas é }",
-                fontFamily = FontFamily.SansSerif,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-        }
-    }
-}
-
-
-
-
-//@Composable
-//fun DescendantExample() {
-//    // CompositionLocalProviders also work across composable functions
-//    Text("This Text uses the disabled alpha now")
-//}
-
-
-
-
-//fun CompositionLocalExample() {
-//    MaterialTheme { // MaterialTheme sets ContentAlpha.high as default
-//        Column {
-////            Text("Uses MaterialTheme's provided alpha")
-////            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-////                Text("Medium value provided for LocalContentAlpha")
-////                Text("This Text also uses the medium value")
-//
-//            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
-//            textFieldInsere()
-//            }
-//        }
-//    }
-//}
 
 
